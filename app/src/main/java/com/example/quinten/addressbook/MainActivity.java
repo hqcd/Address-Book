@@ -1,6 +1,9 @@
 package com.example.quinten.addressbook;
 
+import android.content.ContentResolver;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -9,8 +12,15 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.CursorAdapter;
+import android.widget.ListView;
+import android.widget.SimpleCursorAdapter;
 
 public class MainActivity extends AppCompatActivity {
+
+    AddressBookDatabaseHelper myDBAdapter;
+    ListView contactList;
+    SQLiteDatabase myDB;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -19,6 +29,17 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        contactList = (ListView)findViewById(R.id.contactList);
+
+        myDBAdapter = new AddressBookDatabaseHelper(this);
+        myDB = myDBAdapter.getReadableDatabase();
+    }
+
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+        //updateContactList();
     }
 
     @Override
@@ -47,5 +68,20 @@ public class MainActivity extends AppCompatActivity {
     {
         Intent intent = new Intent(getApplicationContext(), NewContact.class);
         startActivity(intent);
+    }
+
+    public void updateContactList()
+    {
+        //Select only the NAME column
+        String[] projection = {AddressBookDatabaseHelper.COL_1, AddressBookDatabaseHelper.COL_2};
+
+        //Query the db for all the values in the NAME column
+        Cursor cursor = myDB.query("contact_table", projection, null, null, null, null, null, null);
+
+        //Adapter binds the data from the cursor to the list view
+        SimpleCursorAdapter adapter = new SimpleCursorAdapter(this, android.R.layout.simple_list_item_1, cursor, null, null, 0);
+        contactList.setAdapter(adapter);
+
+
     }
 }

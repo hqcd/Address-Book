@@ -22,12 +22,15 @@
             android:layout_height="wrap_content"
             android:hint="Phone"
             android:id="@+id/phoneET"
-            android:inputType="number"/>
+            android:inputType="phone"
+            android:maxLength="11"/>
+
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="E-Mail"
-            android:id="@+id/emailET"/>
+            android:id="@+id/emailET"
+            android:inputType="textEmailAddress"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -54,7 +57,8 @@
             android:layout_height="wrap_content"
             android:hint="Zip"
             android:id="@+id/zipET"
-            android:inputType="number"/>
+            android:inputType="number"
+            android:maxLength="5"/>
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
