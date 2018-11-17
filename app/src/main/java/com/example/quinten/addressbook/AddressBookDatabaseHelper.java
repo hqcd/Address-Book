@@ -2,6 +2,7 @@ package com.example.quinten.addressbook;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
@@ -52,5 +53,38 @@ public class AddressBookDatabaseHelper extends SQLiteOpenHelper {
             return false;
         else
             return true;
+    }
+
+    public Cursor getData()
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor data = db.rawQuery("SELECT NAME FROM contact_table", null);
+        return data;
+    }
+
+    public Cursor getItemId(String name)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "SELECT * FROM " + TABLE_NAME + " WHERE " + COL_2 + " = '" + name + "'";
+        Cursor data = db.rawQuery(query, null);
+
+        return data;
+    }
+
+    public void updateData(int _id, String name, String phone, String email, String street, String city, String state, String zip)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "UPDATE " + TABLE_NAME + " SET " + COL_2 + " = '" + name + "', " + COL_3 + " = '" + phone + "', " + COL_4 + " = '" + email + "', " + COL_5 + " = '" + street +
+                "', " + COL_6 + " = '" + city + "', " + COL_7 + " = '" + state + "', " + COL_8 + " = '" + zip+ "' WHERE " + COL_1 + " = '" + _id + "'";
+        System.out.println(query);
+        db.execSQL(query);
+    }
+
+    public void delete(int id)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "DELETE FROM " + TABLE_NAME + " WHERE " + COL_1 + " = " + id;
+
+        db.execSQL(query);
     }
 }
