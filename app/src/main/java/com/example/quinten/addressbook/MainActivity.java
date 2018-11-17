@@ -1,26 +1,28 @@
+/*
+* Created by Quinten Whitaker on 11/14/18
+* Homework 3 - Address BOok
+* */
 package com.example.quinten.addressbook;
 
-import android.content.ContentResolver;
 import android.content.Intent;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.CursorAdapter;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.SimpleCursorAdapter;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
-    AddressBookDatabaseHelper myDBAdapter;
+    AddressBookDatabaseHelper addressBookDatabaseHelper;
     ListView contactList;
-    SQLiteDatabase myDB;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,16 +32,15 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         contactList = (ListView)findViewById(R.id.contactList);
-
-        myDBAdapter = new AddressBookDatabaseHelper(this);
-        myDB = myDBAdapter.getReadableDatabase();
+        addressBookDatabaseHelper = new AddressBookDatabaseHelper(this);
     }
 
     @Override
     public void onResume()
     {
         super.onResume();
-        //updateContactList();
+        //Update the list view with names from the db
+        updateContactList();
     }
 
     @Override
@@ -72,16 +73,29 @@ public class MainActivity extends AppCompatActivity {
 
     public void updateContactList()
     {
-        //Select only the NAME column
-        String[] projection = {AddressBookDatabaseHelper.COL_1, AddressBookDatabaseHelper.COL_2};
+        Cursor data = addressBookDatabaseHelper.getData();
+        ArrayList<String> listData = new ArrayList<>();
+        while(data.moveToNext())
+        {
+            listData.add(data.getString(0));
+        }
 
-        //Query the db for all the values in the NAME column
-        Cursor cursor = myDB.query("contact_table", projection, null, null, null, null, null, null);
-
-        //Adapter binds the data from the cursor to the list view
-        SimpleCursorAdapter adapter = new SimpleCursorAdapter(this, android.R.layout.simple_list_item_1, cursor, null, null, 0);
+        ListAdapter adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, listData);
         contactList.setAdapter(adapter);
+        contactList.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String name = parent.getItemAtPosition(position).toString();
 
+                Intent intent = new Intent(getApplicationContext(), ViewContact.class);
+                intent.putExtra("name", name);
+                startActivity(intent);
 
+            }
+        });
+
+        System.out.println("CONTACT LIST UPDATED");
     }
+
+
 }
