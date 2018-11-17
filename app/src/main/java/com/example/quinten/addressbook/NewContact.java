@@ -1,5 +1,6 @@
 package com.example.quinten.addressbook;
 
+import android.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -12,6 +13,7 @@ public class NewContact extends AppCompatActivity {
     AddressBookDatabaseHelper mydb;
 
     EditText nameET, phoneET, emailET, streetET, cityET, stateET, zipET;
+    String name, phone, email, street, city, state, zip;
     Button addContactButton;
 
     @Override
@@ -45,26 +47,43 @@ public class NewContact extends AppCompatActivity {
 
     public void addContact()
     {
-        String name = nameET.getText().toString();
-        String phone = phoneET.getText().toString();
-        String email = emailET.getText().toString();
-        String street = streetET.getText().toString();
-        String city = cityET.getText().toString();
-        String state = stateET.getText().toString();
-        String zip = zipET.getText().toString();
+        name = nameET.getText().toString();
+        phone = phoneET.getText().toString();
+        email = emailET.getText().toString();
+        street = streetET.getText().toString();
+        city = cityET.getText().toString();
+        state = stateET.getText().toString();
+        zip = zipET.getText().toString();
 
-        boolean isInserted = mydb.insertData(name, phone, email, street, city, state, zip);
-
-        if(isInserted)
+        //Make sure name field is inputted
+        if(nameET.getText().toString().length() > 0)
         {
-            Toast.makeText(getApplicationContext(), "Contact Added", Toast.LENGTH_SHORT).show();
+            boolean isInserted = mydb.insertData(name, phone, email, street, city, state, zip);
+
+            if(isInserted)
+            {
+                Toast.makeText(getApplicationContext(), "Contact Added", Toast.LENGTH_SHORT).show();
+            }
+            else
+            {
+                Toast.makeText(getApplicationContext(), "Failed to Add Contact", Toast.LENGTH_SHORT).show();
+
+            }
+
+            finish();
         }
+
         else
         {
-            Toast.makeText(getApplicationContext(), "Failed to Add Contact", Toast.LENGTH_SHORT).show();
+            AlertDialog.Builder nameNotNull = new AlertDialog.Builder(this);
+            nameNotNull.setTitle("Name Required");
+            nameNotNull.setMessage("The Name field must be filled in");
+            nameNotNull.setPositiveButton("Ok", null);
 
+            AlertDialog dialog = nameNotNull.create();
+            dialog.show();
         }
 
-        finish();
+
     }
 }
